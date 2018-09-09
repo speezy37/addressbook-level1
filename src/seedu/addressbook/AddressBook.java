@@ -115,6 +115,10 @@ public class AddressBook {
     private static final String COMMAND_LIST_DESC = "Displays all persons as a list with index numbers.";
     private static final String COMMAND_LIST_EXAMPLE = COMMAND_LIST_WORD;
 
+    private static final String COMMAND_SORT_WORD = "sort";
+    private static final String COMMAND_SORT_DESC = "Sorts and displays all persons as a list with index numbers.";
+    private static final String COMMAND_SORT_EXAMPLE = COMMAND_SORT_WORD;
+
     private static final String COMMAND_DELETE_WORD = "delete";
     private static final String COMMAND_DELETE_DESC = "Deletes a person identified by the index number used in "
                                                     + "the last find/list call.";
@@ -375,6 +379,9 @@ public class AddressBook {
             return executeFindPersons(commandArgs);
         case COMMAND_LIST_WORD:
             return executeListAllPersonsInAddressBook();
+        case COMMAND_SORT_WORD:
+            return executeSortAllPersonsInAddressBook();
+            //return "SORTING";
         case COMMAND_DELETE_WORD:
             return executeDeletePerson(commandArgs);
         case COMMAND_CLEAR_WORD:
@@ -579,6 +586,15 @@ public class AddressBook {
         return getMessageForPersonsDisplayedSummary(toBeDisplayed);
     }
 
+
+    private static String executeSortAllPersonsInAddressBook(){
+        ArrayList<String[]> toBeDisplayed = getAllPersonsInAddressBook();
+
+        showToUser(toBeDisplayed);
+        return getMessageForPersonsDisplayedSummary(toBeDisplayed);
+    }
+
+
     /**
      * Requests to terminate the program.
      */
@@ -639,15 +655,26 @@ public class AddressBook {
      * Returns the display string representation of the list of persons.
      */
     private static String getDisplayString(ArrayList<String[]> persons) {
-        final StringBuilder messageAccumulator = new StringBuilder();
+        ArrayList<String> listOfInfo = new ArrayList<String>();
         for (int i = 0; i < persons.size(); i++) {
+            final StringBuilder messageAccumulator = new StringBuilder();
             final String[] person = persons.get(i);
             final int displayIndex = i + DISPLAYED_INDEX_OFFSET;
-            messageAccumulator.append('\t')
-                              .append(getIndexedPersonListElementMessage(displayIndex, person))
-                              .append(LS);
+            //messageAccumulator.append(getIndexedPersonListElementMessage(displayIndex, person));
+            messageAccumulator.append(getMessageForFormattedPersonData(person));
+            listOfInfo.add(messageAccumulator.toString());
         }
-        return messageAccumulator.toString();
+
+        Collections.sort(listOfInfo);
+
+        final StringBuilder messageBuilder = new StringBuilder();
+        for(String i: listOfInfo) {
+            messageBuilder.append('\t')
+                    .append(i)
+                    .append(LS);
+        }
+
+        return messageBuilder.toString();
     }
 
     /**
